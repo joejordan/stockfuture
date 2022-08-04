@@ -21,4 +21,11 @@ contract StockFactory is IStockFactory {
         allStocks.push(companyAddress);
         emit CompanyStockCreated(companyName, tickerSymbol, companyAddress, allStocks.length);
     }
+
+    function allStocksCount() external view returns (uint256 count) {
+        count = allStocks.length;
+    }
+    function allStocksList() external view returns (address[] memory stocksList) {
+        stocksList = allStocks;
+    }
 }

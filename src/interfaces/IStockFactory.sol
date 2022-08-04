@@ -12,4 +12,8 @@ interface IStockFactory {
     function createCompanyStock(string memory companyName, string memory tickerSymbol)
         external
         returns (address companyAddress);
+
+    function allStocksCount() external returns (uint256 count);
+
+    function allStocksList() external view returns (address[] memory stocksList);
 }
