@@ -9,7 +9,8 @@ contract CompanyStock is ICompanyStock {
     // company info
     string public companyName;
     string public tickerSymbol;
-    StockType[] public stockTypes;
+    uint numStockTypes;
+    mapping (uint => StockType) stockTypes;
 
     address public factory;
 
@@ -17,13 +18,15 @@ contract CompanyStock is ICompanyStock {
         factory = msg.sender;
     }
 
-    function initialize(string memory _companyName, string memory _tickerSymbol)
+    function initialize(string memory _companyName, string memory _tickerSymbol, StockType[] memory _stockTypes)
         public
     // StockType[] memory _stockTypes
     {
         require(msg.sender == factory, "StockFuture: FORBIDDEN");
         companyName = _companyName;
         tickerSymbol = _tickerSymbol;
-        // stockTypes = _stockTypes;
+        for (uint256 i = 0; i < _stockTypes.length; i++) {
+            stockTypes[i] = _stockTypes[i];
+        }
     }
 }
