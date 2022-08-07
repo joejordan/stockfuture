@@ -10,7 +10,7 @@ contract CompanyStock is ICompanyStock {
     string public companyName;
     string public tickerSymbol;
     uint numStockTypes;
-    mapping (uint => StockType) stockTypes;
+    mapping (uint => StockType) public stockTypes;
 
     address public factory;
 

@@ -20,13 +20,14 @@ contract StockFactoryTest is PRBTest, Cheats {
         ICompanyStock.StockType memory stockType;
         stockType.name = "common";
         stockType.totalSupply = 6969 ether;
+        ICompanyStock.StockType[] memory myStockTypeArray = ICompanyStock.StockType[](stockType);
 
-        // address msft = factory.createCompanyStock("Microsoft", "MSFT", [stockType]);
-        // console.logAddress(msft);
-        // address appl = factory.createCompanyStock("Apple", "APPL", [stockType]);
-        // console.logAddress(appl);
-        // assertEq(msft, factory.allStocks(0));
-        // assertEq(appl, factory.allStocks(1));
-        // assertEq(factory.allStocksCount(), 2);
+        address msft = factory.createCompanyStock("Microsoft", "MSFT", myStockTypeArray);
+        console.logAddress(msft);
+        address appl = factory.createCompanyStock("Apple", "APPL", myStockTypeArray);
+        console.logAddress(appl);
+        assertEq(msft, factory.allStocks(0));
+        assertEq(appl, factory.allStocks(1));
+        assertEq(factory.allStocksCount(), 2);
     }
 }

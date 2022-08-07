@@ -11,7 +11,7 @@ contract StockFactory is IStockFactory {
     function createCompanyStock(
         string memory _companyName,
         string memory _tickerSymbol,
-        ICompanyStock.StockType[] memory _stockTypes
+        ICompanyStock.StockType[] calldata _stockTypes
     ) external returns (address companyAddress) {
         bytes memory bytecode = type(CompanyStock).creationCode;
         bytes32 salt = keccak256(abi.encodePacked(msg.sender, _companyName, _tickerSymbol));
