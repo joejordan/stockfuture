@@ -9,8 +9,8 @@ interface ICompanyStock {
     }
 
     function initialize(
-        string memory _companyName,
-        string memory _tickerSymbol,
-        StockType[] memory _stockTypes
+        string calldata _companyName,
+        string calldata _tickerSymbol,
+        StockType[] calldata _stockTypes
     ) external;
 }

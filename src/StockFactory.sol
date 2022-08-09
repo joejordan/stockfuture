@@ -14,7 +14,8 @@ contract StockFactory is IStockFactory {
         string memory _tickerSymbol,
         ICompanyStock.StockType[] calldata _stockTypes
     ) external returns (address companyAddress) {
-        bytes memory bytecode = type(CompanyStock).creationCode;
+        // get bytecode of CompanyStock contract and append CompanyStock constructor arguments
+        bytes memory bytecode = abi.encodePacked(type(CompanyStock).creationCode, abi.encode(""));
         bytes32 salt = keccak256(abi.encodePacked(msg.sender, _companyName, _tickerSymbol));
         assembly {
             companyAddress := create2(0, add(bytecode, 32), mload(bytecode), salt)
