@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.4;
+pragma experimental ABIEncoderV2;
 
 import { Cheats } from "forge-std/Cheats.sol";
 import { console } from "forge-std/console.sol";
@@ -20,7 +21,7 @@ contract StockFactoryTest is PRBTest, Cheats {
         ICompanyStock.StockType memory stockType;
         stockType.name = "common";
         stockType.totalSupply = 6969 ether;
-        ICompanyStock.StockType[] memory myStockTypeArray = ICompanyStock.StockType[](stockType);
+        ICompanyStock.StockType myStockTypeArray = new ICompanyStock.StockType[];
 
         address msft = factory.createCompanyStock("Microsoft", "MSFT", myStockTypeArray);
         console.logAddress(msft);

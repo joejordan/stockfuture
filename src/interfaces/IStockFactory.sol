@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.15;
+pragma experimental ABIEncoderV2;
 
 import "src/interfaces/ICompanyStock.sol";
 
