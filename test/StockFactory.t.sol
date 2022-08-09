@@ -21,7 +21,8 @@ contract StockFactoryTest is PRBTest, Cheats {
         ICompanyStock.StockType memory stockType;
         stockType.name = "common";
         stockType.totalSupply = 6969 ether;
-        ICompanyStock.StockType myStockTypeArray = new ICompanyStock.StockType[];
+        // i dunno, maybe this is not the best way to approach this shit
+        ICompanyStock.StockType memory myStockTypeArray = new ICompanyStock.StockType[];
 
         address msft = factory.createCompanyStock("Microsoft", "MSFT", myStockTypeArray);
         console.logAddress(msft);
