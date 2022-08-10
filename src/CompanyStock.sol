@@ -23,7 +23,7 @@ contract CompanyStock is ICompanyStock, ERC1155 {
         string calldata _companyName,
         string calldata _tickerSymbol,
         StockType[] calldata _stockTypes
-    ) public {
+    ) public returns (bool) {
         require(msg.sender == factory, "StockFuture: FORBIDDEN");
         companyName = _companyName;
         tickerSymbol = _tickerSymbol;
@@ -31,9 +31,11 @@ contract CompanyStock is ICompanyStock, ERC1155 {
             stockTypes[i] = _stockTypes[i];
         }
         stockTypeCount = _stockTypes.length;
+        return true;
     }
 
     function addStockType(StockType calldata _stockType) public returns (bool) {
-
+        stockTypes[stockTypeCount + 1] = _stockType;
+        return true;
     }
 }

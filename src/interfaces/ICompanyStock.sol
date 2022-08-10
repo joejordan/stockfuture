@@ -12,5 +12,5 @@ interface ICompanyStock {
         string calldata _companyName,
         string calldata _tickerSymbol,
         StockType[] calldata _stockTypes
-    ) external;
+    ) external returns (bool);
 }
