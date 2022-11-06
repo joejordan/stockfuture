@@ -28,4 +28,8 @@ contract CompanyStockTest is PRBTest, Cheats {
         _stockType[0].totalSupply = _totalSupply;
         return _stockType;
     }
+
+    function testInterfaceId() public {
+        console.logBytes4(type(StockFactory).interfaceId);
+    }
 }
