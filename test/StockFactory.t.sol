@@ -2,7 +2,7 @@
 pragma solidity >=0.8.4;
 pragma experimental ABIEncoderV2;
 
-import { Cheats } from "forge-std/Cheats.sol";
+import { StdCheats } from "forge-std/StdCheats.sol";
 import { console } from "forge-std/console.sol";
 import { PRBTest } from "@prb/test/PRBTest.sol";
 
@@ -11,7 +11,7 @@ import { ICompanyStock } from "src/interfaces/ICompanyStock.sol";
 
 /// @dev See the "Writing Tests" section in the Foundry Book if this is your first time with Forge.
 /// https://book.getfoundry.sh/forge/writing-tests
-contract StockFactoryTest is PRBTest, Cheats {
+contract StockFactoryTest is PRBTest, StdCheats {
     StockFactory public factory;
     function setUp() public {
         factory = new StockFactory();
