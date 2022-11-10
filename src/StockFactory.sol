@@ -20,7 +20,7 @@ contract StockFactory is IStockFactory {
         assembly {
             companyAddress := create2(0, add(bytecode, 32), mload(bytecode), salt)
         }
-        ICompanyStock(companyAddress).initialize(_companyName, _tickerSymbol, _stockTypes);
+        ICompanyStock(companyAddress).initialize(_stockTypes);
         allStocks.push(companyAddress);
         emit CompanyStockCreated(_companyName, _tickerSymbol, companyAddress, allStocks.length);
     }

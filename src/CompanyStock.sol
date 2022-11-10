@@ -6,8 +6,6 @@ import { ICompanyStock } from "src/interfaces/ICompanyStock.sol";
 
 contract CompanyStock is ICompanyStock, ERC3525 {
     // company info
-    string public companyName;
-    string public tickerSymbol;
     uint256 public stockTypeCount;
 
     mapping(uint256 => StockType) public stockTypes;
@@ -19,13 +17,9 @@ contract CompanyStock is ICompanyStock, ERC3525 {
     }
 
     function initialize(
-        string calldata _companyName,
-        string calldata _tickerSymbol,
         StockType[] calldata _stockTypes
-    ) public returns (bool) {
-        require(msg.sender == factory, "StockFuture: FORBIDDEN");
-        companyName = _companyName;
-        tickerSymbol = _tickerSymbol;
+    ) public initializer returns (bool) {
+        require(msg.sender == factory, "StockFuture: `initialize` can only be called from the Factory");
         for (uint256 i = 0; i < _stockTypes.length; i++) {
             stockTypes[i] = _stockTypes[i];
         }
