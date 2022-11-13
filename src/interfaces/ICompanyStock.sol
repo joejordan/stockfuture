@@ -5,10 +5,10 @@ pragma experimental ABIEncoderV2;
 interface ICompanyStock {
     struct StockType {
         string name;
+        uint8 slotNumber;
         uint256 totalSupply;
     }
 
-    function initialize(
-        StockType[] calldata _stockTypes
-    ) external returns (bool);
+    function addStockTypes(StockType[] calldata _stockTypes) external returns (bool);
+    function addStockType(StockType calldata _stockType) external returns (bool);
 }
