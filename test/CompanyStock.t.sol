@@ -5,6 +5,7 @@ import { PRBTest } from "prb-test/PRBTest.sol";
 import { StdCheats } from "forge-std/StdCheats.sol";
 import { console } from "forge-std/console.sol";
 import { StockFactory } from "src/StockFactory.sol";
+import { IStockFactory } from "src/interfaces/IStockFactory.sol";
 import { ICompanyStock } from "src/interfaces/ICompanyStock.sol";
 
 contract CompanyStockTest is PRBTest, StdCheats {
@@ -29,7 +30,7 @@ contract CompanyStockTest is PRBTest, StdCheats {
         return _stockType;
     }
 
-    function testInterfaceId() public {
-        console.logBytes4(type(StockFactory).interfaceId);
+    function testInterfaceId() public view {
+        console.logBytes4(type(IStockFactory).interfaceId);
     }
 }
