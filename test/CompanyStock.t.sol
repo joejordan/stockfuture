@@ -16,16 +16,17 @@ contract CompanyStockTest is PRBTest, StdCheats {
     }
 
     function testCreateNewCompany() public {
-        factory.createCompanyStock("NVIDIA", "NVDA", testCreateStockType("common", 69 ether));
+        factory.createCompanyStock("NVIDIA", "NVDA", testCreateStockType("common", "CMN", 69 ether));
     }
 
-    function testCreateStockType(string memory _name, uint256 _totalSupply)
+    function testCreateStockType(string memory _name, string memory _symbol, uint256 _totalSupply)
         public
         pure
-        returns (ICompanyStock.StockType[] memory)
+        returns (ICompanyStock.StockTypeData[] memory)
     {
-        ICompanyStock.StockType[] memory _stockType = new ICompanyStock.StockType[](1);
+        ICompanyStock.StockTypeData[] memory _stockType = new ICompanyStock.StockTypeData[](1);
         _stockType[0].name = _name;
+        _stockType[0].symbol = _symbol;
         _stockType[0].totalSupply = _totalSupply;
         return _stockType;
     }

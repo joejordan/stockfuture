@@ -30,14 +30,16 @@ contract StockFactoryTest is PRBTest, StdCheats {
     }
 
     function testCreateCompanyStock() public {
-        ICompanyStock.StockType memory stockType1;
-        ICompanyStock.StockType memory stockType2;
+        ICompanyStock.StockTypeData memory stockType1;
+        ICompanyStock.StockTypeData memory stockType2;
         stockType1.name = "common";
         stockType1.totalSupply = 6969 ether;
+        stockType1.decimals = 18;
         stockType2.name = "Type A";
         stockType2.totalSupply = 69 ether;
+        stockType2.decimals = 18;
 
-        ICompanyStock.StockType[] memory myStockTypeArray = new ICompanyStock.StockType[](2);
+        ICompanyStock.StockTypeData[] memory myStockTypeArray = new ICompanyStock.StockTypeData[](2);
         myStockTypeArray[0] = stockType1;
         myStockTypeArray[1] = stockType2;
 

@@ -36,7 +36,7 @@ contract StockFactory is IStockFactory {
     function createCompanyStock(
         string memory _companyName,
         string memory _tickerSymbol,
-        ICompanyStock.StockType[] calldata _stockTypes
+        ICompanyStock.StockTypeData[] calldata _stockTypes
     ) external returns (address companyAddress) {
 
         // create CompanyStock contract

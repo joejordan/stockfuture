@@ -15,7 +15,7 @@ interface IStockFactory {
     function createCompanyStock(
         string memory companyName,
         string memory tickerSymbol,
-        ICompanyStock.StockType[] calldata _stockTypes
+        ICompanyStock.StockTypeData[] calldata _stockTypes
     ) external returns (address companyAddress);
 
     function allStocksCount() external returns (uint256 count);

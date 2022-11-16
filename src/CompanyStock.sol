@@ -9,12 +9,8 @@ import { ERC3525SlotEnumerable } from "erc-3525/ERC3525SlotEnumerable.sol";
 import { ICompanyStock } from "src/interfaces/ICompanyStock.sol";
 
 contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ERC3525Burnable, ERC3525SlotEnumerable {
-    // company info
-    uint256 public stockTypeCount;
-
-    mapping(uint256 => StockType) public stockTypes;
-
-    address public factory;
+    
+    mapping(uint256 => StockTypeData) public slots; // tracks our stock types
 
     function initialize(
         string memory name_,
@@ -33,22 +29,30 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
         return super.supportsInterface(interfaceId);
     }
 
-    function addStockTypes(StockType[] calldata _stockTypes) public override onlyOwner returns (bool) {
-        for (uint256 i = 0; i < _stockTypes.length; i++) {
-            stockTypes[i] = _stockTypes[i];
+    function addStockTypes(StockTypeData[] calldata _stockTypes) public override onlyOwner returns (bool) {
+        for (uint256 i = 0; i < _stockTypes.length; ++i) {
+            addStockType(_stockTypes[i]);
         }
-        stockTypeCount = _stockTypes.length;
         return true;
     }
 
-    function addStockType(StockType calldata _stockType) public onlyOwner returns (bool) {
-        stockTypeCount += 1;
-        stockTypes[stockTypeCount] = _stockType;
+    function addStockType(StockTypeData calldata _stockTypeData) public onlyOwner returns (bool) {
+        slots[slotCount()] = _stockTypeData;
 
-        // mint(mintTo_, tokenId_, slot_, value_);
-        // mint(_msgSender(), tokenId_, slot_, value_);
+        uint256 nextTokenId = totalSupply() + 1;
+
+        mint(owner(), nextTokenId, slotCount(), _stockTypeData.totalSupply);
+
         return true;
     }
+
+    function stockTotalSupply(uint256 _slotId) public view returns (uint256) {
+        return slots[_slotId].totalSupply;
+    }
+
+    // function mintValue(tokenId_, value_) public override returns (bool) {
+    //     // mintValue
+    // }
 
     function _beforeValueTransfer(
         address from_,
