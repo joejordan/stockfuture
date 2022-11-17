@@ -50,9 +50,20 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
         return slots[_slotId].totalSupply;
     }
 
-    // function mintValue(tokenId_, value_) public override returns (bool) {
-    //     // mintValue
-    // }
+    function mintValue(uint256 tokenId_, uint256 value_) public override onlyOwner {
+        require(value_ > 0, "Mint value must be greater than 0");
+        // mint value to token id; reverts if tokenId has not yet been minted
+        _mintValue(tokenId_, value_);
+        // extract slot index from tokenId
+        uint256 slot = slotOf(tokenId_);
+        // increment totalSupply of slot
+        slots[slot].totalSupply += value_;
+    }
+
+    function slotTotalSupply(uint256 slot_) public returns (uint256) {
+        require(_slotExists(slot_), "Slot does not exist");
+        return  slots[slot_].totalSupply;
+    }
 
     function _beforeValueTransfer(
         address from_,
