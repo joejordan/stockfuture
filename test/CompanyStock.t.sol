@@ -4,9 +4,10 @@ pragma solidity ^0.8.15;
 import { PRBTest } from "prb-test/PRBTest.sol";
 import { StdCheats } from "forge-std/StdCheats.sol";
 import { console } from "forge-std/console.sol";
-import { StockFactory } from "src/StockFactory.sol";
-import { IStockFactory } from "src/interfaces/IStockFactory.sol";
-import { ICompanyStock } from "src/interfaces/ICompanyStock.sol";
+import { StockFactory } from "../src/StockFactory.sol";
+import { CompanyStock } from "../src/CompanyStock.sol";
+import { IStockFactory } from "../src/interfaces/IStockFactory.sol";
+import { ICompanyStock } from "../src/interfaces/ICompanyStock.sol";
 
 contract CompanyStockTest is PRBTest, StdCheats {
     StockFactory public factory;
