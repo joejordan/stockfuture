@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.15;
 
+// import { console } from "forge-std/console.sol";
 import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import { Ownable2Step } from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import { ERC3525 } from "erc-3525/ERC3525.sol";
@@ -44,8 +45,11 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
         slots[slotCount()] = _stockTypeData;
 
         uint256 nextTokenId = totalSupply() + 1;
+        uint256 nextSlotId = slotCount();
 
-        mint(owner(), nextTokenId, slotCount(), _stockTypeData.totalSupply);
+        _createSlot(nextSlotId);
+
+        mint(owner(), nextTokenId, nextSlotId, _stockTypeData.totalSupply);
 
         return true;
     }
@@ -58,10 +62,8 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
         require(value_ > 0, "Mint value must be greater than 0");
         // mint value to token id; reverts if tokenId has not yet been minted
         _mintValue(tokenId_, value_);
-        // extract slot index from tokenId
-        uint256 slot = slotOf(tokenId_);
         // increment totalSupply of slot
-        slots[slot].totalSupply += value_;
+        slots[slotOf(tokenId_)].totalSupply += value_;
     }
 
     function slotTotalSupply(uint256 slot_) public returns (uint256) {

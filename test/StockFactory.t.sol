@@ -15,18 +15,18 @@ import { ICompanyStock } from "../src/interfaces/ICompanyStock.sol";
 contract StockFactoryTest is PRBTest, StdCheats {
     StockFactory public factory;
     CompanyStock public companyStock;
+    address public meAddress = address(0x69);
+
+    uint8 constant public DEFAULT_DECIMALS = 18;
+
     function setUp() public {
-        vm.startPrank(address(0x69));
+        vm.startPrank(meAddress, meAddress);
         factory = new StockFactory();
-        companyStock = new CompanyStock();
-        console.log("companyStock Owner:", companyStock.owner());
-        companyStock.initialize("TESTERz", "TST", 18);
-        console.log("companyStock Owner:", companyStock.owner());
+        companyStock = CompanyStock(factory.createCompanyStock("TESTERz", "TST", DEFAULT_DECIMALS));
 
+        console.log("companyStock Owner:", companyStock.owner());
         console.log("Me:", msg.sender);
-        // console.log("Factory:", address(factory));
-        // console.log("companyStock:", address(companyStock));
-
+        vm.stopPrank();
     }
 
     function testCreateCompanyStock() public {
@@ -34,22 +34,26 @@ contract StockFactoryTest is PRBTest, StdCheats {
         ICompanyStock.StockTypeData memory stockType2;
         stockType1.name = "common";
         stockType1.totalSupply = 6969 ether;
-        stockType1.decimals = 18;
+        stockType1.decimals = DEFAULT_DECIMALS;
         stockType2.name = "Type A";
         stockType2.totalSupply = 69 ether;
-        stockType2.decimals = 18;
+        stockType2.decimals = DEFAULT_DECIMALS;
 
         ICompanyStock.StockTypeData[] memory myStockTypeArray = new ICompanyStock.StockTypeData[](2);
         myStockTypeArray[0] = stockType1;
         myStockTypeArray[1] = stockType2;
 
-        address msft = factory.createCompanyStock("Microsoft", "MSFT", myStockTypeArray);
+        vm.startPrank(meAddress, meAddress);
+
+        address msft = factory.createCompanyStock("Microsoft", "MSFT", DEFAULT_DECIMALS);
         console.logAddress(msft);
-        address appl = factory.createCompanyStock("Apple", "APPL", myStockTypeArray);
+        address appl = factory.createCompanyStock("Apple", "APPL", DEFAULT_DECIMALS);
         console.logAddress(appl);
         assertEq(msft, factory.allStocks(0));
         assertEq(appl, factory.allStocks(1));
         assertEq(factory.allStocksCount(), 2);
+
+        vm.stopPrank();
     }
 
     function testCheckOwnership() public {
@@ -61,6 +65,6 @@ contract StockFactoryTest is PRBTest, StdCheats {
     }
 
     function createCompany() private returns(address) {
-        return factory.createCompanyStock("Ignite Software", "IGS");
+        return factory.createCompanyStock("Ignite Software", "IGS", DEFAULT_DECIMALS);
     }
 }

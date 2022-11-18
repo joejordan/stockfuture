@@ -2,9 +2,10 @@
 pragma solidity ^0.8.15;
 pragma experimental ABIEncoderV2;
 
-import { IStockFactory } from "src/interfaces/IStockFactory.sol";
-import { CompanyStock } from "src/CompanyStock.sol";
-import { ICompanyStock } from "src/interfaces/ICompanyStock.sol";
+// import { console } from "forge-std/console.sol";
+import { IStockFactory } from "./interfaces/IStockFactory.sol";
+import { ICompanyStock } from "./interfaces/ICompanyStock.sol";
+import { CompanyStock } from "./CompanyStock.sol";
 
 contract StockFactory is IStockFactory {
     address[] public allStocks;
