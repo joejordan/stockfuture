@@ -17,7 +17,11 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
         string memory symbol_,
         uint8 decimals_
     ) public virtual override(ERC3525Burnable, ERC3525SlotEnumerable) initializer {
+        // initialize ERC3525Burnable
         __ERC3525Burnable_init(name_, symbol_, decimals_);
+
+        // override the default owner (StockFactory) upon contract initialization
+        _transferOwnership(tx.origin);
     }
 
     function supportsInterface(bytes4 interfaceId)

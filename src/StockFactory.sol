@@ -9,45 +9,16 @@ import { ICompanyStock } from "src/interfaces/ICompanyStock.sol";
 contract StockFactory is IStockFactory {
     address[] public allStocks;
 
-    function createCompanyStock(
-        string memory _companyName,
-        string memory _tickerSymbol
-    ) external returns (address companyAddress) {
-
-        // get bytecode of CompanyStock contract and append CompanyStock constructor arguments
-        bytes memory bytecode = abi.encodePacked(type(CompanyStock).creationCode, abi.encode(""));
-
-        /**
-         *  calculate a salt based upon msg.sender, company name and ticker symbol.
-         *  This will prevent an address from creating more than one of an identical company.
-         */
-        bytes32 salt = keccak256(abi.encodePacked(msg.sender, _companyName, _tickerSymbol));
-
-        // assembly block to access the create2 opcode
-        assembly {
-            companyAddress := create2(0, add(bytecode, 32), mload(bytecode), salt)
-        }
-
-        // confirm that that the bytecode has been deployed
-        require(companyAddress != address(0), "DEPLOYMENT_FAILED");
-
-        emit CompanyStockCreated(_companyName, _tickerSymbol, companyAddress, allStocks.length);
-    }
+    /**
+     *  @dev create new company stock contract without any initial stockType data
+     */
     function createCompanyStock(
         string memory _companyName,
         string memory _tickerSymbol,
-        ICompanyStock.StockTypeData[] calldata _stockTypes
-    ) external returns (address companyAddress) {
-
-        // create CompanyStock contract
-        companyAddress = _createCompanyStock(_companyName, _tickerSymbol);
-
-        // add initial stock types
-        CompanyStock(companyAddress).addStockTypes(_stockTypes);
-
-        // push new CompanyStock address to our allStocks array
-        allStocks.push(companyAddress);
-        emit CompanyStockCreated(_companyName, _tickerSymbol, companyAddress, allStocks.length);
+        uint8 _decimals
+    ) external returns (address) {
+        // create and initialize CompanyStock contract
+        return _createCompanyStock(_companyName, _tickerSymbol, _decimals);
     }
 
     function allStocksCount() external view returns (uint256 count) {
@@ -60,7 +31,8 @@ contract StockFactory is IStockFactory {
 
     function _createCompanyStock(
         string memory _companyName,
-        string memory _tickerSymbol
+        string memory _tickerSymbol,
+        uint8 _decimals
     ) private returns (address companyAddress) {
 
         // get bytecode of CompanyStock contract and append CompanyStock constructor arguments
@@ -80,6 +52,13 @@ contract StockFactory is IStockFactory {
         // confirm that that the bytecode has been deployed
         require(companyAddress != address(0), "DEPLOYMENT_FAILED");
 
+        // initialize CompanyStock
+        CompanyStock(companyAddress).initialize(_companyName, _tickerSymbol, _decimals);
+
+        // add new companyStock address to allstocks storage array
+        allStocks.push(companyAddress);
+
+        // alert the world of the new company stock that was created
         emit CompanyStockCreated(_companyName, _tickerSymbol, companyAddress, allStocks.length);
     }
 }
