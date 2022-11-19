@@ -35,15 +35,10 @@ contract CompanyStockTest is PRBTest, StdCheats {
         factory.createCompanyStock("NVIDIA", "NVDA", 18);
     }
 
-    function testMintValue() public {
-        vm.startPrank(meAddress);
-        ICompanyStock.StockTypeData[] memory stockTypeData = createStockType(
-            "Common",
-            "TSLA",
-            DEFAULT_DECIMALS,
-            5000 ether
-        );
+    function testNewStockType() public {
+        ICompanyStock.StockTypeData[] memory stockTypeData = teslaStockType();
 
+        vm.startPrank(meAddress);
         companyStock.addStockTypes(stockTypeData);
 
         uint256 slotToCheck = companyStock.slotOf(companyStock.totalSupply());
@@ -57,6 +52,18 @@ contract CompanyStockTest is PRBTest, StdCheats {
         vm.stopPrank();
     }
 
+    function testMint() public {
+        vm.startPrank(meAddress);
+        basicSlotSetup();
+        uint256 slotToCheck = companyStock.slotOf(companyStock.totalSupply());
+        uint256 slotTotalSupply = companyStock.slotTotalSupply(slotToCheck);
+        console.log("Total Supply for Slot:", slotTotalSupply);
+
+        companyStock.mint(meAddress, companyStock.totalSupply() + 1, companyStock.slotCount(), 69);
+        console.log("Total Supply for Slot:", companyStock.slotTotalSupply(slotToCheck));
+        vm.stopPrank();
+    }
+
     function testInterfaceId() public view {
         console.logBytes4(type(IStockFactory).interfaceId);
     }
@@ -64,6 +71,22 @@ contract CompanyStockTest is PRBTest, StdCheats {
     /**
      * Utility functions
      */
+
+     function basicSlotSetup() public {
+        ICompanyStock.StockTypeData[] memory stockTypeData = teslaStockType();
+        companyStock.addStockTypes(stockTypeData);
+     }
+
+     function teslaStockType() public pure returns (ICompanyStock.StockTypeData[] memory) {
+        ICompanyStock.StockTypeData[] memory stockTypeData = createStockType(
+            "Common",
+            "TSLA",
+            DEFAULT_DECIMALS,
+            5000 ether
+        );
+
+        return stockTypeData;
+     }
 
     function createStockType(
         string memory _name,
