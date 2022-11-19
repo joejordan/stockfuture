@@ -15,3 +15,9 @@ test = "test"
 [profile.ci]
 fuzz_runs = 1_000
 verbosity = 4
+
+[rpc_endpoints]
+local = "${LOCAL_RPC_URL}"
+goerli = "${GOERLI_RPC_URL}"
+sepolia="${SEPOLIA_RPC_URL}"
+mainnet = "${MAINNET_RPC_URL}"

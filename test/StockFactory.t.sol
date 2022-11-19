@@ -60,7 +60,7 @@ contract StockFactoryTest is PRBTest, StdCheats {
         console.log("Owner:", companyStock.owner());
     }
 
-    function testCheckFactory() public {
+    function testCheckFactory() public view {
         console.log("Factory:", address(factory));
     }
 
