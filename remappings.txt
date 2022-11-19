@@ -2,3 +2,4 @@
 forge-std/=lib/forge-std/src/
 erc-3525/=lib/erc-3525/contracts/
 @openzeppelin/=lib/openzeppelin-contracts/
+src/=src/
