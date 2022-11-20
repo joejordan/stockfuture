@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.15;
 
-// import { console } from "forge-std/console.sol";
+import { console } from "forge-std/console.sol";
 import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import { Ownable2Step } from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import { ERC3525 } from "erc-3525/ERC3525.sol";
+import { IERC3525 } from "erc-3525/IERC3525.sol";
 import { ERC3525Burnable } from "erc-3525/ERC3525Burnable.sol";
 import { ERC3525SlotEnumerable } from "erc-3525/ERC3525SlotEnumerable.sol";
 import { ICompanyStock } from "src/interfaces/ICompanyStock.sol";
@@ -54,8 +55,38 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
         return true;
     }
 
-    function stockTotalSupply(uint256 _slotId) public view returns (uint256) {
-        return slots[_slotId].totalSupply;
+    function balanceOf(uint256 tokenId_) public view override(ERC3525, IERC3525) returns (uint256) {
+        // get unscaled balance
+        uint unscaledBalance = super.balanceOf(tokenId_);
+
+        ////////////////////////////////////////////////////////
+        // determine if we need to scale the user's balance
+        ////////////////////////////////////////////////////////
+
+        // extract slot of passed token
+        uint256 slotOfToken = slotOf(tokenId_);
+        // get scale of slot
+        ScaleValue memory scale = slots[slotOfToken].scale;
+
+        if (isScaleSet(scale)) {
+            // scale balance and return
+            return (unscaledBalance * scale.numerator) / scale.denominator;
+        }
+        // return unscaled balance
+        return unscaledBalance;
+    }
+
+    function slotTotalSupply(uint256 slot_) public view returns (uint256) {
+        uint256 unscaledTotalSupply = slots[slot_].totalSupply;
+
+        ScaleValue memory scale = slots[slot_].scale;
+
+        if (isScaleSet(scale)) {
+            // scale balance and return
+            return (unscaledTotalSupply * scale.numerator) / scale.denominator;
+        }
+        // return unscaled totalSupply
+        return unscaledTotalSupply;
     }
 
     function mint(address mintTo_, uint256 tokenId_, uint256 slot_, uint256 value_) public override onlyOwner {
@@ -82,9 +113,13 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
         slots[slotOf(tokenId_)].totalSupply -= burnValue_;
     }
 
-    function slotTotalSupply(uint256 slot_) public view returns (uint256) {
+    function slotScaleValue(uint256 slot_, ScaleValue memory scale_) public onlyOwner {
         require(_slotExists(slot_), "Slot does not exist");
-        return  slots[slot_].totalSupply;
+        slots[slot_].scale = scale_;
+    }
+
+    function nextTokenId() public returns (uint256) {
+        return _createOriginalTokenId();
     }
 
     function _beforeValueTransfer(
@@ -107,5 +142,13 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
         uint256 value_
     ) internal override(ERC3525, ERC3525SlotEnumerable) {
         // solhint-disable-previous-line no-empty-blocks
+    }
+
+    function isScaleSet(ScaleValue memory scale_) private view returns (bool) {
+        console.log("SCALEVALUE 1", scale_.numerator);
+        console.log("SCALEVALUE 2", scale_.denominator);
+        console.log((scale_.numerator != 0 || scale_.denominator != 0));
+        console.log(!(scale_.numerator == 0 && scale_.denominator == 0));
+        return !(scale_.numerator == 0 && scale_.denominator == 0);
     }
 }
