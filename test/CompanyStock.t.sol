@@ -13,14 +13,16 @@ contract CompanyStockTest is PRBTest, StdCheats {
     StockFactory public factory;
     CompanyStock public companyStock;
 
-    address public meAddress = address(0x69);
+    address public bossman = address(0x69);
+    address public alice = address(0x11123);
+    address public bob = address(0x22246);
 
     uint8 public constant DEFAULT_DECIMALS = 18;
 
     function setUp() public {
         factory = new StockFactory();
 
-        vm.startPrank(meAddress, meAddress);
+        vm.startPrank(bossman, bossman);
         companyStock = CompanyStock(factory.createCompanyStock("Tesla", "TSLA", 18));
 
         console.log("Factory address:", address(factory));
@@ -38,7 +40,7 @@ contract CompanyStockTest is PRBTest, StdCheats {
     function testNewStockType() public {
         ICompanyStock.StockTypeData[] memory stockTypeData = teslaStockType();
 
-        vm.startPrank(meAddress);
+        vm.startPrank(bossman);
         companyStock.addStockTypes(stockTypeData);
 
         uint256 slotToCheck = companyStock.slotOf(companyStock.totalSupply());
@@ -53,14 +55,21 @@ contract CompanyStockTest is PRBTest, StdCheats {
     }
 
     function testMint() public {
-        vm.startPrank(meAddress);
+        vm.startPrank(bossman);
         basicSlotSetup();
         uint256 slotToCheck = companyStock.slotOf(companyStock.totalSupply());
-        uint256 slotTotalSupply = companyStock.slotTotalSupply(slotToCheck);
-        console.log("Total Supply for Slot:", slotTotalSupply);
+        console.log("Total Supply for Slot INITIAL:", companyStock.slotTotalSupply(slotToCheck));
 
-        companyStock.mint(meAddress, companyStock.totalSupply() + 1, companyStock.slotCount(), 69);
-        console.log("Total Supply for Slot:", companyStock.slotTotalSupply(slotToCheck));
+        uint256 bossToken = companyStock.nextTokenId();
+        companyStock.mint(bossman, bossToken, companyStock.slotCount(), 69);
+        uint256 aliceToken = companyStock.nextTokenId();
+         companyStock.mint(alice, aliceToken, companyStock.slotCount(), 6000 ether);
+        uint256 bobToken = companyStock.nextTokenId();
+         companyStock.mint(bob, bobToken, companyStock.slotCount(), 90 ether);
+
+        console.log("Slot Count:", companyStock.slotCount());
+        console.log("Total Supply for Slot AFTERMINT:", companyStock.slotTotalSupply(slotToCheck));
+        console.log("Bob balance:", companyStock.balanceOf(bobToken));
         vm.stopPrank();
     }
 
@@ -74,6 +83,7 @@ contract CompanyStockTest is PRBTest, StdCheats {
 
      function basicSlotSetup() public {
         ICompanyStock.StockTypeData[] memory stockTypeData = teslaStockType();
+        console.log("STOCK TYPE TOTALSUPPLY:", stockTypeData[0].totalSupply);
         companyStock.addStockTypes(stockTypeData);
      }
 
@@ -82,7 +92,7 @@ contract CompanyStockTest is PRBTest, StdCheats {
             "Common",
             "TSLA",
             DEFAULT_DECIMALS,
-            5000 ether
+            69000 ether
         );
 
         return stockTypeData;
