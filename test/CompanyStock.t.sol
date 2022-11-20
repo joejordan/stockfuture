@@ -61,11 +61,11 @@ contract CompanyStockTest is PRBTest, StdCheats {
         console.log("Total Supply for Slot INITIAL:", companyStock.slotTotalSupply(slotToCheck));
 
         uint256 bossToken = companyStock.nextTokenId();
-        companyStock.mint(bossman, bossToken, companyStock.slotCount(), 69);
+        companyStock.mint(bossman, bossToken, slotToCheck, 6900);
         uint256 aliceToken = companyStock.nextTokenId();
-         companyStock.mint(alice, aliceToken, companyStock.slotCount(), 6000 ether);
+         companyStock.mint(alice, aliceToken, slotToCheck, 0.6 ether);
         uint256 bobToken = companyStock.nextTokenId();
-         companyStock.mint(bob, bobToken, companyStock.slotCount(), 90 ether);
+         companyStock.mint(bob, bobToken, slotToCheck, 0.9 ether);
 
         console.log("Slot Count:", companyStock.slotCount());
         console.log("Total Supply for Slot AFTERMINT:", companyStock.slotTotalSupply(slotToCheck));

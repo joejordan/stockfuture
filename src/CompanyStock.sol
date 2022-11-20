@@ -42,15 +42,20 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
         return true;
     }
 
-    function addStockType(StockTypeData calldata _stockTypeData) public onlyOwner returns (bool) {
+    function addStockType(StockTypeData memory _stockTypeData) public onlyOwner returns (bool) {
+        // get next ids to mint
+        uint256 _nextTokenId = nextTokenId();
+        uint256 _nextSlotId = slotCount();
+
+        // slot must exist before we can mint tokens to it
+        _createSlot(_nextTokenId);
+
+        // mint totalSupply to new owner-controlled token
+        mint(owner(), _nextTokenId, _nextSlotId, _stockTypeData.totalSupply);
+
+        // store slot info into storage. We save this for last because .mint adds to the totalSupply,
+        // and if we store the slot info before mint, it will double-count the totalSupply value.
         slots[slotCount()] = _stockTypeData;
-
-        uint256 nextTokenId = totalSupply() + 1;
-        uint256 nextSlotId = slotCount();
-
-        _createSlot(nextSlotId);
-
-        mint(owner(), nextTokenId, nextSlotId, _stockTypeData.totalSupply);
 
         return true;
     }
@@ -82,6 +87,7 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
         ScaleValue memory scale = slots[slot_].scale;
 
         if (isScaleSet(scale)) {
+            console.log("slotTotalSupply scaled total:", (unscaledTotalSupply * scale.numerator) / scale.denominator);
             // scale balance and return
             return (unscaledTotalSupply * scale.numerator) / scale.denominator;
         }
@@ -91,7 +97,7 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
 
     function mint(address mintTo_, uint256 tokenId_, uint256 slot_, uint256 value_) public override onlyOwner {
         super.mint(mintTo_, tokenId_, slot_, value_);
-        slots[slotOf(tokenId_)].totalSupply += value_;
+        slots[slotOf(tokenId_)].totalSupply += value_;  
     }
 
     function mintValue(uint256 tokenId_, uint256 value_) public override onlyOwner {
@@ -144,11 +150,7 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
         // solhint-disable-previous-line no-empty-blocks
     }
 
-    function isScaleSet(ScaleValue memory scale_) private view returns (bool) {
-        console.log("SCALEVALUE 1", scale_.numerator);
-        console.log("SCALEVALUE 2", scale_.denominator);
-        console.log((scale_.numerator != 0 || scale_.denominator != 0));
-        console.log(!(scale_.numerator == 0 && scale_.denominator == 0));
+    function isScaleSet(ScaleValue memory scale_) private pure returns (bool) {
         return !(scale_.numerator == 0 && scale_.denominator == 0);
     }
 }
