@@ -48,7 +48,7 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
         uint256 _nextSlotId = slotCount();
 
         // slot must exist before we can mint tokens to it
-        _createSlot(_nextTokenId);
+        _createSlot(_nextSlotId);
 
         // mint totalSupply to new owner-controlled token
         mint(owner(), _nextTokenId, _nextSlotId, _stockTypeData.totalSupply);
