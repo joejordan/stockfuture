@@ -81,6 +81,18 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
         return unscaledBalance;
     }
 
+    function slotName(uint256 slot_) public view returns (string memory) {
+        return slots[slot_].name;
+    }
+
+    function slotSymbol(uint256 slot_) public view returns (string memory) {
+        return slots[slot_].symbol;
+    }
+
+    function slotDecimals(uint256 slot_) public view returns (uint8) {
+        return slots[slot_].decimals;
+    }
+
     function slotTotalSupply(uint256 slot_) public view returns (uint256) {
         uint256 unscaledTotalSupply = slots[slot_].totalSupply;
 
@@ -119,8 +131,9 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
         slots[slotOf(tokenId_)].totalSupply -= burnValue_;
     }
 
+    /// @dev reset scale by passing (0,0) to ScaleValue
     function slotScaleValue(uint256 slot_, ScaleValue memory scale_) public onlyOwner {
-        require(_slotExists(slot_), "Slot does not exist");
+        // require(_slotExists(slot_), "Slot does not exist");
         slots[slot_].scale = scale_;
     }
 
