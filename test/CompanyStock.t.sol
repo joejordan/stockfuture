@@ -19,16 +19,18 @@ contract CompanyStockTest is PRBTest, StdCheats {
 
     uint8 public constant DEFAULT_DECIMALS = 18;
 
+    ICompanyStock.ScaleValue public scale;
+
     function setUp() public {
         factory = new StockFactory();
 
         vm.startPrank(bossman, bossman);
         companyStock = CompanyStock(factory.createCompanyStock("Tesla", "TSLA", 18));
 
-        console.log("Factory address:", address(factory));
-        console.log("companyStock Owner:", CompanyStock(companyStock).owner());
-        console.log("msg.sender", msg.sender);
-        console.log("tx.origin", tx.origin);
+        // console.log("Factory address:", address(factory));
+        // console.log("companyStock Owner:", CompanyStock(companyStock).owner());
+        // console.log("msg.sender", msg.sender);
+        // console.log("tx.origin", tx.origin);
 
         vm.stopPrank();
     }
@@ -63,13 +65,38 @@ contract CompanyStockTest is PRBTest, StdCheats {
         uint256 bossToken = companyStock.nextTokenId();
         companyStock.mint(bossman, bossToken, slotToCheck, 6900);
         uint256 aliceToken = companyStock.nextTokenId();
-         companyStock.mint(alice, aliceToken, slotToCheck, 0.6 ether);
+        companyStock.mint(alice, aliceToken, slotToCheck, 0.6 ether);
         uint256 bobToken = companyStock.nextTokenId();
-         companyStock.mint(bob, bobToken, slotToCheck, 0.9 ether);
+        companyStock.mint(bob, bobToken, slotToCheck, 0.9 ether);
 
-        console.log("Slot Count:", companyStock.slotCount());
         console.log("Total Supply for Slot AFTERMINT:", companyStock.slotTotalSupply(slotToCheck));
-        console.log("Bob balance:", companyStock.balanceOf(bobToken));
+        vm.stopPrank();
+    }
+
+    function testScale() public {
+        vm.startPrank(bossman);
+        basicSlotSetup();
+        // basicAccountSetup();
+
+
+        uint256 bossToken = companyStock.nextTokenId();
+        companyStock.mint(bossman, bossToken, 0, 6900);
+        uint256 aliceToken = companyStock.nextTokenId();
+        companyStock.mint(alice, aliceToken, 0, 1111111111111111111111111111 ether);
+        uint256 bobToken = companyStock.nextTokenId();
+        companyStock.mint(bob, bobToken, 0, 0.9 ether);
+
+        console.log("Total Supply for Slot AFTERMINT:", companyStock.slotTotalSupply(0));
+        console.log("ALICE BALANCE:", companyStock.balanceOf(aliceToken));
+
+        scale = ICompanyStock.ScaleValue({
+            numerator: 400_000,
+            denominator: 65_214
+        });
+        companyStock.slotScaleValue(companyStock.slotOf(bossToken), scale);
+
+        console.log("Total Supply for Slot AFTERSCALE:", companyStock.slotTotalSupply(0));
+        console.log("ALICE BALANCE:", companyStock.balanceOf(aliceToken));
         vm.stopPrank();
     }
 
@@ -81,13 +108,21 @@ contract CompanyStockTest is PRBTest, StdCheats {
      * Utility functions
      */
 
-     function basicSlotSetup() public {
+    function basicSlotSetup() public {
         ICompanyStock.StockTypeData[] memory stockTypeData = teslaStockType();
-        console.log("STOCK TYPE TOTALSUPPLY:", stockTypeData[0].totalSupply);
         companyStock.addStockTypes(stockTypeData);
-     }
+    }
 
-     function teslaStockType() public pure returns (ICompanyStock.StockTypeData[] memory) {
+    function basicAccountSetup() public {
+        uint256 bossToken = companyStock.nextTokenId();
+        companyStock.mint(bossman, bossToken, 0, 6900);
+        uint256 aliceToken = companyStock.nextTokenId();
+        companyStock.mint(alice, aliceToken, 0, 0.6 ether);
+        uint256 bobToken = companyStock.nextTokenId();
+        companyStock.mint(bob, bobToken, 0, 0.9 ether);
+    }
+
+    function teslaStockType() public pure returns (ICompanyStock.StockTypeData[] memory) {
         ICompanyStock.StockTypeData[] memory stockTypeData = createStockType(
             "Common",
             "TSLA",
@@ -96,7 +131,7 @@ contract CompanyStockTest is PRBTest, StdCheats {
         );
 
         return stockTypeData;
-     }
+    }
 
     function createStockType(
         string memory _name,
@@ -107,6 +142,7 @@ contract CompanyStockTest is PRBTest, StdCheats {
         ICompanyStock.StockTypeData[] memory _stockType = new ICompanyStock.StockTypeData[](1);
         _stockType[0].name = _name;
         _stockType[0].symbol = _symbol;
+        _stockType[0].decimals = _decimals;
         _stockType[0].totalSupply = _totalSupply;
         return _stockType;
     }
