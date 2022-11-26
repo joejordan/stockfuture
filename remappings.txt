@@ -1,5 +1,5 @@
 @prb/test/=lib/prb-test/src/
 forge-std/=lib/forge-std/src/
-erc-3525/=lib/erc-3525/contracts/
+erc-3525-extended/=lib/erc-3525-extended/contracts/
 @openzeppelin/=lib/openzeppelin-contracts/
 src/=src/

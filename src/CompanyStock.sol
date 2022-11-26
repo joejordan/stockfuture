@@ -4,14 +4,13 @@ pragma solidity ^0.8.15;
 import { console } from "forge-std/console.sol";
 import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import { Ownable2Step } from "@openzeppelin/contracts/access/Ownable2Step.sol";
-import { ERC3525 } from "erc-3525/ERC3525.sol";
-import { IERC3525 } from "erc-3525/IERC3525.sol";
-import { ERC3525Burnable } from "erc-3525/ERC3525Burnable.sol";
-import { ERC3525SlotEnumerable } from "erc-3525/ERC3525SlotEnumerable.sol";
+import { ERC3525 } from "erc-3525-extended/ERC3525.sol";
+import { IERC3525 } from "erc-3525-extended/IERC3525.sol";
+import { ERC3525Burnable } from "erc-3525-extended/ERC3525Burnable.sol";
+import { ERC3525SlotEnumerable } from "erc-3525-extended/ERC3525SlotEnumerable.sol";
 import { ICompanyStock } from "src/interfaces/ICompanyStock.sol";
 
 contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ERC3525Burnable, ERC3525SlotEnumerable {
-    
     mapping(uint256 => StockTypeData) public slots; // tracks our stock types
 
     function initialize(
@@ -26,12 +25,7 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
         _transferOwnership(tx.origin);
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC3525, ERC3525SlotEnumerable)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view override(ERC3525, ERC3525SlotEnumerable) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 
@@ -62,7 +56,7 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
 
     function balanceOf(uint256 tokenId_) public view override(ERC3525, IERC3525) returns (uint256) {
         // get unscaled balance
-        uint unscaledBalance = super.balanceOf(tokenId_);
+        uint256 unscaledBalance = super.balanceOf(tokenId_);
 
         ////////////////////////////////////////////////////////
         // determine if we need to scale the user's balance
@@ -107,9 +101,14 @@ contract CompanyStock is Initializable, ICompanyStock, Ownable2Step, ERC3525, ER
         return unscaledTotalSupply;
     }
 
-    function mint(address mintTo_, uint256 tokenId_, uint256 slot_, uint256 value_) public override onlyOwner {
+    function mint(
+        address mintTo_,
+        uint256 tokenId_,
+        uint256 slot_,
+        uint256 value_
+    ) public override onlyOwner {
         super.mint(mintTo_, tokenId_, slot_, value_);
-        slots[slotOf(tokenId_)].totalSupply += value_;  
+        slots[slotOf(tokenId_)].totalSupply += value_;
     }
 
     function mintValue(uint256 tokenId_, uint256 value_) public override onlyOwner {
