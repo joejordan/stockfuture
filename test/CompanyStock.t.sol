@@ -40,7 +40,7 @@ contract CompanyStockTest is PRBTest, StdCheats {
     }
 
     function testNewStockType() public {
-        ICompanyStock.StockTypeData[] memory stockTypeData = teslaStockType();
+        ICompanyStock.SlotMetadata[] memory stockTypeData = teslaStockType();
 
         vm.startPrank(bossman);
         companyStock.addStockTypes(stockTypeData);
@@ -93,7 +93,7 @@ contract CompanyStockTest is PRBTest, StdCheats {
             numerator: 400_000,
             denominator: 65_214
         });
-        companyStock.slotScaleValue(companyStock.slotOf(bossToken), scale);
+        // companyStock.slotScaleValue(companyStock.slotOf(bossToken), scale);
 
         console.log("Total Supply for Slot AFTERSCALE:", companyStock.slotTotalSupply(0));
         console.log("ALICE BALANCE:", companyStock.balanceOf(aliceToken));
@@ -109,7 +109,7 @@ contract CompanyStockTest is PRBTest, StdCheats {
      */
 
     function basicSlotSetup() public {
-        ICompanyStock.StockTypeData[] memory stockTypeData = teslaStockType();
+        ICompanyStock.SlotMetadata[] memory stockTypeData = teslaStockType();
         companyStock.addStockTypes(stockTypeData);
     }
 
@@ -122,12 +122,11 @@ contract CompanyStockTest is PRBTest, StdCheats {
         companyStock.mint(bob, bobToken, 0, 0.9 ether);
     }
 
-    function teslaStockType() public pure returns (ICompanyStock.StockTypeData[] memory) {
-        ICompanyStock.StockTypeData[] memory stockTypeData = createStockType(
+    function teslaStockType() public pure returns (ICompanyStock.SlotMetadata[] memory) {
+        ICompanyStock.SlotMetadata[] memory stockTypeData = createStockType(
             "Common",
             "TSLA",
-            DEFAULT_DECIMALS,
-            69000 ether
+            DEFAULT_DECIMALS
         );
 
         return stockTypeData;
@@ -136,14 +135,12 @@ contract CompanyStockTest is PRBTest, StdCheats {
     function createStockType(
         string memory _name,
         string memory _symbol,
-        uint8 _decimals,
-        uint256 _totalSupply
-    ) public pure returns (ICompanyStock.StockTypeData[] memory) {
-        ICompanyStock.StockTypeData[] memory _stockType = new ICompanyStock.StockTypeData[](1);
+        uint8 _decimals
+    ) public pure returns (ICompanyStock.SlotMetadata[] memory) {
+        ICompanyStock.SlotMetadata[] memory _stockType = new ICompanyStock.SlotMetadata[](1);
         _stockType[0].name = _name;
         _stockType[0].symbol = _symbol;
         _stockType[0].decimals = _decimals;
-        _stockType[0].totalSupply = _totalSupply;
         return _stockType;
     }
 }
