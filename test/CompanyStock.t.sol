@@ -73,6 +73,29 @@ contract CompanyStockTest is PRBTest, StdCheats {
         vm.stopPrank();
     }
 
+    function testBurn() public {
+        vm.startPrank(bossman);
+        basicSlotSetup();
+        uint256 slotToCheck = companyStock.slotOf(companyStock.totalSupply());
+
+        uint256 bossToken = companyStock.nextTokenId();
+        companyStock.mint(bossman, bossToken, slotToCheck, 6900);
+        uint256 aliceToken = companyStock.nextTokenId();
+        companyStock.mint(alice, aliceToken, slotToCheck, 0.6 ether);
+        uint256 bobToken = companyStock.nextTokenId();
+        companyStock.mint(bob, bobToken, slotToCheck, 0.9 ether);
+        vm.stopPrank();
+
+        console.log("Total Supply for Slot AFTERMINT:", companyStock.slotTotalSupply(slotToCheck));
+        
+        vm.startPrank(alice);
+        companyStock.burnValue(aliceToken, 0.5 ether);
+        vm.stopPrank();
+
+        console.log("Total Supply for Slot AFTERBURN:", companyStock.slotTotalSupply(slotToCheck));
+
+    }
+
     function testScale() public {
         vm.startPrank(bossman);
         basicSlotSetup();
